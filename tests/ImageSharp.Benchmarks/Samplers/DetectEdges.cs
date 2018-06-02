@@ -25,7 +25,7 @@ namespace SixLabors.ImageSharp.Benchmarks
         {
             if (this.image == null)
             {
-                using (FileStream stream = File.OpenRead("../ImageSharp.Tests/TestImages/Formats/Bmp/Car.bmp"))
+                using (FileStream stream = File.OpenRead("/Users/pknopf/git/ImageSharp/tests/Images/Input/Bmp/Car.bmp"))
                 {
                     this.image = CoreImage.Load<Rgba32>(stream);
                 }

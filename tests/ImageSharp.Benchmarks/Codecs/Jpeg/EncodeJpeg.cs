@@ -13,13 +13,15 @@ namespace SixLabors.ImageSharp.Benchmarks.Codecs.Jpeg
 
     using BenchmarkDotNet.Attributes;
 
+    using SixLabors.ImageSharp.Formats.Jpeg.LibJpegTurbo;
+
     using CoreImage = SixLabors.ImageSharp.Image;
 
     public class EncodeJpeg : BenchmarkBase
     {
         // System.Drawing needs this.
         private Stream bmpStream;
-        private Image bmpDrawing;
+        //private Image bmpDrawing;
         private Image<Rgba32> bmpCore;
 
         [GlobalSetup]
@@ -27,10 +29,10 @@ namespace SixLabors.ImageSharp.Benchmarks.Codecs.Jpeg
         {
             if (this.bmpStream == null)
             {
-                this.bmpStream = File.OpenRead("../ImageSharp.Tests/TestImages/Formats/Bmp/Car.bmp");
+                this.bmpStream = File.OpenRead("/Users/pknopf/git/ImageSharp/tests/Images/Input/Bmp/Car.bmp");
                 this.bmpCore = CoreImage.Load<Rgba32>(this.bmpStream);
                 this.bmpStream.Position = 0;
-                this.bmpDrawing = Image.FromStream(this.bmpStream);
+                //this.bmpDrawing = Image.FromStream(this.bmpStream);
             }
         }
 
@@ -39,17 +41,26 @@ namespace SixLabors.ImageSharp.Benchmarks.Codecs.Jpeg
         {
             this.bmpStream.Dispose();
             this.bmpCore.Dispose();
-            this.bmpDrawing.Dispose();
+            //this.bmpDrawing.Dispose();
         }
 
-        [Benchmark(Baseline = true, Description = "System.Drawing Jpeg")]
-        public void JpegSystemDrawing()
+        [Benchmark(Description = "LibJpegTurbo")]
+        public void LibJpegTurbo()
         {
             using (MemoryStream memoryStream = new MemoryStream())
             {
-                this.bmpDrawing.Save(memoryStream, ImageFormat.Jpeg);
+                this.bmpCore.Save(memoryStream, new LibJpegTurboEncoder());
             }
         }
+        
+        // [Benchmark(Baseline = true, Description = "System.Drawing Jpeg")]
+        // public void JpegSystemDrawing()
+        // {
+        //     using (MemoryStream memoryStream = new MemoryStream())
+        //     {
+        //         this.bmpDrawing.Save(memoryStream, ImageFormat.Jpeg);
+        //     }
+        // }
 
         [Benchmark(Description = "ImageSharp Jpeg")]
         public void JpegCore()
